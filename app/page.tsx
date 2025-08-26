@@ -77,7 +77,7 @@ export default function DashboardPage() {
     });
 
 
-    return () => socketClient.disconnect();
+    return () => { socketClient.disconnect(); }
   }, []);
 
 
@@ -86,7 +86,9 @@ export default function DashboardPage() {
   return (
     <DashboardLayout currentPage="Overview">
       <div className="space-y-6">
-        {/* Key Metrics Row */}
+
+
+        {/* ***************************Key Metrics Row******************************** */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -129,6 +131,8 @@ export default function DashboardPage() {
 
         </div>
 
+
+        {/* ****************************Emotion Distribution Activity timeline**************** */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -151,6 +155,8 @@ export default function DashboardPage() {
           </Card>
         </div>
 
+
+        {/* ****************************Location Heatmap************************* */}
         <Card>
           <CardHeader>
             <CardTitle>Location Heatmap</CardTitle>
@@ -161,6 +167,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
+
+        {/* ****************************Performance Alert System health************************* */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
