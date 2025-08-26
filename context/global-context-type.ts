@@ -11,6 +11,7 @@ interface MirrorType {
 }
 
 interface LocationType {
+    id: number;
     place: string;
     description: string;
     mirrorCount: number;

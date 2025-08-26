@@ -2,72 +2,17 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, TrendingUp, TrendingDown } from "lucide-react"
-
-const locationData = [
-  {
-    id: 1,
-    name: "Main Lobby",
-    faces: 156,
-    sentiment: 8.2,
-    trend: "up",
-    engagement: "high",
-    mirrors: 4,
-    status: "online",
-  },
-  {
-    id: 2,
-    name: "Reception Area",
-    faces: 89,
-    sentiment: 7.1,
-    trend: "up",
-    engagement: "medium",
-    mirrors: 2,
-    status: "online",
-  },
-  {
-    id: 3,
-    name: "Conference Room A",
-    faces: 45,
-    sentiment: 7.8,
-    trend: "stable",
-    engagement: "medium",
-    mirrors: 1,
-    status: "online",
-  },
-  {
-    id: 4,
-    name: "Break Room",
-    faces: 34,
-    sentiment: 6.3,
-    trend: "down",
-    engagement: "low",
-    mirrors: 2,
-    status: "partial",
-  },
-  {
-    id: 5,
-    name: "Conference Room B",
-    faces: 12,
-    sentiment: 6.8,
-    trend: "stable",
-    engagement: "low",
-    mirrors: 1,
-    status: "online",
-  },
-  {
-    id: 6,
-    name: "Executive Floor",
-    faces: 67,
-    sentiment: 8.5,
-    trend: "up",
-    engagement: "high",
-    mirrors: 3,
-    status: "online",
-  },
-]
+import { MapPin } from "lucide-react"
+import { useGlobalContext } from "@/context/global-context-manager"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Plus } from "lucide-react"
 
 export function LocationHeatmap() {
+  const { locations } = useGlobalContext()
+
   const getEngagementColor = (engagement: string) => {
     switch (engagement) {
       case "high":
@@ -94,41 +39,82 @@ export function LocationHeatmap() {
     }
   }
 
+  // Fallback: show “Add Location” if no locations exist
+  if (!locations || locations.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-60">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Location
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add New Location</DialogTitle>
+              <p className="text-sm text-muted-foreground">Create a new location to deploy smart mirrors.</p>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">Name</Label>
+                <Input id="name" placeholder="Main Lobby" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="description" className="text-right">Description</Label>
+                <Input id="description" placeholder="Primary entrance area" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="capacity" className="text-right">Capacity</Label>
+                <Input id="capacity" type="number" placeholder="100" className="col-span-3" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Create Location</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {locationData.map((location) => (
+      {locations.map((location) => (
         <Card key={location.id} className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-muted-foreground" />
-                <CardTitle className="text-base">{location.name}</CardTitle>
+                <CardTitle className="text-base">{location.place}</CardTitle>
               </div>
-              <div className={`w-3 h-3 rounded-full ${getStatusColor(location.status)}`} />
+              <div className={`w-3 h-3 rounded-full ${getStatusColor(location.description)}`} />
             </div>
             <CardDescription>
-              {location.mirrors} mirror{location.mirrors !== 1 ? "s" : ""} deployed
+              {location.mirrorCount} mirror{location.mirrorCount !== 1 ? "s" : ""} deployed
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Faces Today</span>
-              <span className="font-semibold">{location.faces}</span>
+              <span className="font-semibold">
+                {location.mirrors.map(m => m.totalFaceDetected).reduce((a, b) => a + b, 0)}
+              </span>
             </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Sentiment</span>
-              <div className="flex items-center gap-1">
-                <span className="font-semibold">{location.sentiment}/10</span>
-                {location.trend === "up" && <TrendingUp className="w-3 h-3 text-green-600" />}
-                {location.trend === "down" && <TrendingDown className="w-3 h-3 text-red-600" />}
-              </div>
-            </div>
-
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Engagement</span>
-              <Badge variant="outline" className={getEngagementColor(location.engagement)}>
-                {location.engagement}
+              <Badge variant="outline" className={getEngagementColor(
+                location.mirrors.map(m => m.totalFaceDetected).reduce((a, b) => a + b, 0) > 100
+                  ? 'high'
+                  : location.mirrors.map(m => m.totalFaceDetected).reduce((a, b) => a + b, 0) > 50
+                    ? 'medium'
+                    : 'low'
+              )}>
+                {location.mirrors.map(m => m.totalFaceDetected).reduce((a, b) => a + b, 0) > 100
+                  ? 'High'
+                  : location.mirrors.map(m => m.totalFaceDetected).reduce((a, b) => a + b, 0) > 50
+                    ? 'Medium'
+                    : 'Low'}
               </Badge>
             </div>
           </CardContent>
