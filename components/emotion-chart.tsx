@@ -1,7 +1,7 @@
 "use client"
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
-
+import { useGlobalContext } from "@/context/global-context-manager"
 const emotionData = [
   { name: "Happy", value: 42, color: "hsl(var(--chart-1))" },
   { name: "Neutral", value: 28, color: "hsl(var(--chart-2))" },
@@ -11,6 +11,8 @@ const emotionData = [
 ]
 
 export function EmotionChart() {
+
+  const GlobalContext = useGlobalContext();
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>

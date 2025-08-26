@@ -7,6 +7,7 @@ interface MirrorType {
     storageUsage: number;
     emotion: Emotion;
     avgBodyTemperature: number;
+    totalFaceDetected: number;
 }
 
 interface LocationType {

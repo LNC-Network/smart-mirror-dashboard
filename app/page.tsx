@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress"
 import { EmotionChart } from "@/components/emotion-chart"
 import { ActivityTimeline } from "@/components/activity-timeline"
 import { LocationHeatmap } from "@/components/location-heatmap"
-import { Monitor, Smile, TrendingUp, AlertTriangle, Activity, Eye, Users, Clock, Zap } from "lucide-react"
+import { Monitor as MirrorIcon, Smile, TrendingUp, AlertTriangle, Activity, Eye, Users, Clock, Zap } from "lucide-react"
 import { useEffect, useState } from "react"
 import { MirrorType } from "@/context/global-context-type"
 import { io } from "socket.io-client";
@@ -16,6 +16,21 @@ export default function DashboardPage() {
 
   const [mirrors, setMirrors] = useState<MirrorType[]>([]);
   const [socket, setSocket] = useState<any>(null);
+
+  const topEmotion = mirrors.length > 0
+    ? Object.entries(
+      mirrors.reduce((acc, mirror) => {
+        acc[mirror.emotion] = (acc[mirror.emotion] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ).sort((a, b) => b[1] - a[1])[0][0]
+    : "N/A";
+
+  const topEmotionPercentage = mirrors.length > 0
+    ? Math.round(
+      (mirrors.filter(m => m.emotion === topEmotion).length / mirrors.length) * 100
+    )
+    : 0;
 
   useEffect(() => {
     // Connect to the server
@@ -30,9 +45,9 @@ export default function DashboardPage() {
 
       // Example: send mirror info on connect
       const mirror: MirrorType = {
-
         id: "mirror1",
         ipAddress: "192.168.1.100",
+        totalFaceDetected: 100,
         description: "Living Room Mirror",
         cpuUsage: 20,
         memoryUsage: 50,
@@ -76,7 +91,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Mirrors</CardTitle>
-              <Monitor className="h-4 w-4 text-muted-foreground" />
+              <MirrorIcon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{mirrors.length}</div>
@@ -97,10 +112,7 @@ export default function DashboardPage() {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1,247</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">+12%</span> from yesterday
-              </p>
+              <div className="text-2xl font-bold">{mirrors.reduce((acc, m) => acc + m.totalFaceDetected, 0)}</div>
             </CardContent>
           </Card>
 
@@ -110,21 +122,11 @@ export default function DashboardPage() {
               <Smile className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Happy</div>
-              <p className="text-xs text-muted-foreground">42% of all detections</p>
+              <div className="text-2xl font-bold">{topEmotion}</div>
+              <p className="text-xs text-muted-foreground">{topEmotionPercentage}% of all detections</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Sentiment Score</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">7.5/10</div>
-              <Progress value={75} className="mt-2" />
-            </CardContent>
-          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -218,35 +220,7 @@ export default function DashboardPage() {
               <CardDescription>Latest system notifications</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 p-2 bg-red-50 rounded-lg border border-red-200">
-                  <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium text-red-900">Mirror Offline</p>
-                    <p className="text-xs text-red-700">Break Room - Mirror #12</p>
-                    <p className="text-xs text-muted-foreground">2 min ago</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-2 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <Activity className="w-4 h-4 text-yellow-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium text-yellow-900">Low Activity</p>
-                    <p className="text-xs text-yellow-700">Conference Room B</p>
-                    <p className="text-xs text-muted-foreground">15 min ago</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
-                  <TrendingUp className="w-4 h-4 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium text-blue-900">Sentiment Spike</p>
-                    <p className="text-xs text-blue-700">Main Lobby - High happiness</p>
-                    <p className="text-xs text-muted-foreground">1 hour ago</p>
-                  </div>
-                </div>
-              </div>
-
+              <div>No notification</div>
               <Button variant="outline" className="w-full mt-4 bg-transparent" size="sm">
                 View All Alerts
               </Button>
