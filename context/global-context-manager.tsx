@@ -1,37 +1,6 @@
 "use client"
 import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
-
-interface MirrorType {
-    id: string;
-    location: string;
-    cpuUsage: number;
-    memoryUsage: number;
-}
-
-interface LocationType {
-    place: string;
-    description: string;
-    mirrorCount: number;
-    mirrors: MirrorType[];
-}
-
-type Emotion = "happy" | "sad" | "neutral" | "angry" | "surprised" | "disgusted";
-
-interface GlobalContextType {
-    totalMirrorCount: number;
-    totalFaceCount: number;
-    topEmotion: Emotion | null;
-    locations: LocationType[];
-
-    // Functions to update context
-    setTotalMirrorCount: (count: number) => void;
-    setTotalFaceCount: (count: number) => void;
-    setTopEmotion: (emotion: Emotion) => void;
-    addLocation: (location: LocationType) => void;
-    updateLocation: (place: string, updated: Partial<LocationType>) => void;
-    addMirror: (mirror: MirrorType) => void;
-    updateMirror: (id: string, updated: Partial<MirrorType>) => void;
-}
+import { Emotion, MirrorType, LocationType, GlobalContextType } from './global-context-type'; // types import
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
@@ -53,7 +22,6 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
     const addMirror = useCallback((mirror: MirrorType) => {
         setMirrors(prev => [...prev, mirror]);
         setTotalMirrorCount(prev => prev + 1);
-        updateLocation(mirror.location, { mirrorCount: (locations.find(loc => loc.place === mirror.location)?.mirrorCount || 0) + 1 });
     }, [locations]);
 
     const updateMirror = useCallback((id: string, updated: Partial<MirrorType>) => {

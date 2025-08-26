@@ -1,3 +1,4 @@
+"use client"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -7,8 +8,66 @@ import { EmotionChart } from "@/components/emotion-chart"
 import { ActivityTimeline } from "@/components/activity-timeline"
 import { LocationHeatmap } from "@/components/location-heatmap"
 import { Monitor, Smile, TrendingUp, AlertTriangle, Activity, Eye, Users, Clock, Zap } from "lucide-react"
+import { useEffect, useState } from "react"
+import { MirrorType } from "@/context/global-context-type"
+import { io } from "socket.io-client";
 
 export default function DashboardPage() {
+
+  const [mirrors, setMirrors] = useState<MirrorType[]>([]);
+  const [socket, setSocket] = useState<any>(null);
+
+  useEffect(() => {
+    // Connect to the server
+    const socketClient = io({
+      path: "/api/socket_io",
+    });
+
+    setSocket(socketClient);
+
+    socketClient.on("connect", () => {
+      console.log("Connected with ID:", socketClient.id);
+
+      // Example: send mirror info on connect
+      const mirror: MirrorType = {
+
+        id: "mirror1",
+        ipAddress: "192.168.1.100",
+        description: "Living Room Mirror",
+        cpuUsage: 20,
+        memoryUsage: 50,
+        storageUsage: 100,
+        emotion: "happy",
+        avgBodyTemperature: 36.5
+      };
+      socketClient.emit("addMirror", mirror);
+    });
+
+    socketClient.on("mirrorAdded", (mirror: MirrorType) => {
+      setMirrors(prev => {
+        // Avoid duplicates
+        if (prev.find(m => m.id === mirror.id)) return prev;
+        return [...prev, mirror];
+      });
+    });
+
+    socketClient.on("mirrorUpdate", (data: MirrorType) => {
+      setMirrors(prev =>
+        prev.map(m => (m.id === data.id ? data : m))
+      );
+    });
+
+    socketClient.on("mirrorDisconnected", (id: string) => {
+      setMirrors(prev => prev.filter(m => m.id !== id));
+    });
+
+
+    return () => socketClient.disconnect();
+  }, []);
+
+
+
+
   return (
     <DashboardLayout currentPage="Overview">
       <div className="space-y-6">
@@ -20,13 +79,13 @@ export default function DashboardPage() {
               <Monitor className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">24</div>
+              <div className="text-2xl font-bold">{mirrors.length}</div>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  22 Online
+                  {mirrors.filter(m => m.cpuUsage > 0).length} Online
                 </Badge>
                 <Badge variant="destructive" className="bg-red-100 text-red-800">
-                  2 Offline
+                  {mirrors.filter(m => m.cpuUsage === 0).length} Offline
                 </Badge>
               </div>
             </CardContent>

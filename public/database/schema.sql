@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS mirrors (
     id TEXT PRIMARY KEY,
+    ipAddress TEXT NOT NULL,
     location TEXT NOT NULL,
     description TEXT,
     createdAt INTEGER DEFAULT (strftime('%s','now'))

@@ -54,6 +54,8 @@
     "react-hook-form": "^7.60.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "latest",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "sonner": "^1.7.4",
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^2.5.5",
