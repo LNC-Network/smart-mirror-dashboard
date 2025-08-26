@@ -2,7 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Monitor, Wifi, Activity, Zap, AlertTriangle, CheckCircle } from "lucide-react"
 
-export function MirrorStats() {
+interface MirrorStatsProps {
+  totalMirrors: number;
+  onlineMirrors: number;
+  offlineMirrors: number;
+  activeDetections: number;
+}
+
+export function MirrorStats({ totalMirrors, onlineMirrors, offlineMirrors, activeDetections }: MirrorStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <Card>
@@ -11,14 +18,15 @@ export function MirrorStats() {
           <Monitor className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">24</div>
+          <div className="text-2xl font-bold">{totalMirrors}</div>
           <div className="flex items-center gap-2 mt-1">
             <Badge className="bg-green-100 text-green-800">
               <CheckCircle className="w-3 h-3 mr-1" />
-              22 Online
+              {onlineMirrors} Online
             </Badge>
             <Badge variant="destructive" className="bg-red-100 text-red-800">
-              <AlertTriangle className="w-3 h-3 mr-1" />2 Offline
+              <AlertTriangle className="w-3 h-3 mr-1" />
+              {offlineMirrors} Offline
             </Badge>
           </div>
         </CardContent>
@@ -56,7 +64,7 @@ export function MirrorStats() {
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">1,247</div>
+          <div className="text-2xl font-bold">{activeDetections.toLocaleString()}</div>
           <p className="text-xs text-muted-foreground">Faces detected today</p>
         </CardContent>
       </Card>

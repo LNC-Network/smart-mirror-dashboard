@@ -9,12 +9,11 @@ import { ActivityTimeline } from "@/components/activity-timeline"
 import { LocationHeatmap } from "@/components/location-heatmap"
 import { Monitor as MirrorIcon, Smile, TrendingUp, AlertTriangle, Activity, Eye, Users, Clock, Zap } from "lucide-react"
 import { useEffect, useState } from "react"
-import { MirrorType } from "@/context/global-context-type"
-import { io } from "socket.io-client";
+import { useGlobalContext } from "@/context/global-context-manager"
+import { io } from "socket.io-client"
 
 export default function DashboardPage() {
-
-  const [mirrors, setMirrors] = useState<MirrorType[]>([]);
+  const { mirrors, addMirror, updateMirror, removeMirror } = useGlobalContext();
   const [socket, setSocket] = useState<any>(null);
 
   const topEmotion = mirrors.length > 0
@@ -44,7 +43,7 @@ export default function DashboardPage() {
       console.log("Connected with ID:", socketClient.id);
 
       // Example: send mirror info on connect
-      const mirror: MirrorType = {
+      const mirror = {
         id: "mirror1",
         ipAddress: "192.168.1.100",
         totalFaceDetected: 100,
@@ -58,36 +57,24 @@ export default function DashboardPage() {
       socketClient.emit("addMirror", mirror);
     });
 
-    socketClient.on("mirrorAdded", (mirror: MirrorType) => {
-      setMirrors(prev => {
-        // Avoid duplicates
-        if (prev.find(m => m.id === mirror.id)) return prev;
-        return [...prev, mirror];
-      });
+    socketClient.on("mirrorAdded", (mirror) => {
+      addMirror(mirror);
     });
 
-    socketClient.on("mirrorUpdate", (data: MirrorType) => {
-      setMirrors(prev =>
-        prev.map(m => (m.id === data.id ? data : m))
-      );
+    socketClient.on("mirrorUpdate", (data) => {
+      updateMirror(data.id, data);
     });
 
     socketClient.on("mirrorDisconnected", (id: string) => {
-      setMirrors(prev => prev.filter(m => m.id !== id));
+      removeMirror(id);
     });
 
-
     return () => { socketClient.disconnect(); }
-  }, []);
-
-
-
+  }, [addMirror, updateMirror, removeMirror]);
 
   return (
     <DashboardLayout currentPage="Overview">
       <div className="space-y-6">
-
-
         {/* ***************************Key Metrics Row******************************** */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -128,9 +115,7 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground">{topEmotionPercentage}% of all detections</p>
             </CardContent>
           </Card>
-
         </div>
-
 
         {/* ****************************Emotion Distribution Activity timeline**************** */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -155,7 +140,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-
         {/* ****************************Location Heatmap************************* */}
         <Card>
           <CardHeader>
@@ -166,7 +150,6 @@ export default function DashboardPage() {
             <LocationHeatmap />
           </CardContent>
         </Card>
-
 
         {/* ****************************Performance Alert System health************************* */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

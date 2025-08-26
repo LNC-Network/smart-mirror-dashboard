@@ -14,115 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Progress } from "@/components/ui/progress"
 import { MoreHorizontal, Edit, Trash2, Settings, MapPin, Monitor, Eye } from "lucide-react"
+import { LocationType } from "@/context/global-context-type"
 
-const locationData = [
-  {
-    id: 1,
-    name: "Main Lobby",
-    description: "Primary entrance area",
-    mirrors: 4,
-    onlineMirrors: 4,
-    capacity: 150,
-    currentOccupancy: 89,
-    sentiment: 8.2,
-    facesToday: 156,
-    status: "active",
-    lastUpdate: "2 min ago",
-  },
-  {
-    id: 2,
-    name: "Reception Area",
-    description: "Customer service desk",
-    mirrors: 2,
-    onlineMirrors: 2,
-    capacity: 50,
-    currentOccupancy: 23,
-    sentiment: 7.1,
-    facesToday: 89,
-    status: "active",
-    lastUpdate: "1 min ago",
-  },
-  {
-    id: 3,
-    name: "Conference Room A",
-    description: "Large meeting room",
-    mirrors: 1,
-    onlineMirrors: 1,
-    capacity: 20,
-    currentOccupancy: 12,
-    sentiment: 7.8,
-    facesToday: 45,
-    status: "active",
-    lastUpdate: "5 min ago",
-  },
-  {
-    id: 4,
-    name: "Break Room",
-    description: "Employee relaxation area",
-    mirrors: 2,
-    onlineMirrors: 1,
-    capacity: 30,
-    currentOccupancy: 8,
-    sentiment: 6.3,
-    facesToday: 34,
-    status: "warning",
-    lastUpdate: "3 min ago",
-  },
-  {
-    id: 5,
-    name: "Conference Room B",
-    description: "Small meeting room",
-    mirrors: 1,
-    onlineMirrors: 1,
-    capacity: 10,
-    currentOccupancy: 0,
-    sentiment: 6.8,
-    facesToday: 12,
-    status: "active",
-    lastUpdate: "10 min ago",
-  },
-  {
-    id: 6,
-    name: "Executive Floor",
-    description: "C-suite offices",
-    mirrors: 3,
-    onlineMirrors: 3,
-    capacity: 25,
-    currentOccupancy: 15,
-    sentiment: 8.5,
-    facesToday: 67,
-    status: "active",
-    lastUpdate: "1 min ago",
-  },
-  {
-    id: 7,
-    name: "Cafeteria",
-    description: "Main dining area",
-    mirrors: 6,
-    onlineMirrors: 5,
-    capacity: 200,
-    currentOccupancy: 134,
-    sentiment: 7.9,
-    facesToday: 298,
-    status: "active",
-    lastUpdate: "30 sec ago",
-  },
-  {
-    id: 8,
-    name: "Parking Garage",
-    description: "Underground parking",
-    mirrors: 3,
-    onlineMirrors: 2,
-    capacity: 100,
-    currentOccupancy: 67,
-    sentiment: 6.5,
-    facesToday: 145,
-    status: "warning",
-    lastUpdate: "7 min ago",
-  },
-]
+interface LocationTableProps {
+  locations: LocationType[]
+}
 
-export function LocationTable() {
+export function LocationTable({ locations }: LocationTableProps) {
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null)
 
   const getStatusBadge = (status: string) => {
@@ -164,7 +62,7 @@ export function LocationTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {locationData.map((location) => {
+          {locations.map((location) => {
             const occupancyPercentage = Math.round((location.currentOccupancy / location.capacity) * 100)
             return (
               <TableRow key={location.id}>
@@ -181,7 +79,7 @@ export function LocationTable() {
                   <div className="flex items-center gap-2">
                     <Monitor className="w-4 h-4 text-muted-foreground" />
                     <span className="font-medium">
-                      {location.onlineMirrors}/{location.mirrors}
+                      {location.onlineMirrors}/{location.mirrorCount}
                     </span>
                   </div>
                 </TableCell>

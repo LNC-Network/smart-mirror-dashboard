@@ -1,3 +1,4 @@
+"use client";
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -7,8 +8,17 @@ import { MirrorGrid } from "@/components/mirror-grid"
 import { MirrorStats } from "@/components/mirror-stats"
 import { MirrorFilters } from "@/components/mirror-filters"
 import { Search, RefreshCw } from "lucide-react"
+import { useGlobalContext } from "@/context/global-context-manager"
 
 export default function MirrorsPage() {
+  const {
+    totalMirrorCount,
+    activeMirrors,
+    offlineMirrors,
+    totalFaceCount,
+    mirrors
+  } = useGlobalContext();
+
   return (
     <DashboardLayout currentPage="Mirrors">
       <div className="space-y-6">
@@ -40,7 +50,12 @@ export default function MirrorsPage() {
         </div>
 
         {/* Mirror Stats Overview */}
-        <MirrorStats />
+        <MirrorStats
+          totalMirrors={totalMirrorCount}
+          onlineMirrors={activeMirrors}
+          offlineMirrors={offlineMirrors}
+          activeDetections={totalFaceCount}
+        />
 
         {/* Mirror Grid */}
         <Card>
@@ -49,7 +64,7 @@ export default function MirrorsPage() {
             <CardDescription>Real-time status and performance of all smart mirrors</CardDescription>
           </CardHeader>
           <CardContent>
-            <MirrorGrid />
+            <MirrorGrid mirrors={mirrors} />
           </CardContent>
         </Card>
       </div>

@@ -20,24 +20,10 @@ import {
   RefreshCw,
   Settings,
 } from "lucide-react"
+import { MirrorType } from "@/context/global-context-type"
 
 interface MirrorDetailsProps {
-  mirror: {
-    id: string
-    name: string
-    location: string
-    status: string
-    lastSeen: string
-    uptime: number
-    facesToday: number
-    currentEmotion: string
-    sentiment: number
-    responseTime: number
-    temperature: number
-    cpuUsage: number
-    memoryUsage: number
-    storageUsage: number
-  }
+  mirror: MirrorType
 }
 
 const performanceData = [
@@ -93,7 +79,7 @@ export function MirrorDetails({ mirror }: MirrorDetailsProps) {
             <div className={`text-lg font-semibold capitalize ${getStatusColor(mirror.status)}`}>{mirror.status}</div>
             <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
               <Clock className="w-3 h-3" />
-              Last seen: {mirror.lastSeen}
+              Last seen: {mirror.lastUpdate}
             </div>
           </CardContent>
         </Card>
@@ -144,7 +130,7 @@ export function MirrorDetails({ mirror }: MirrorDetailsProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{mirror.facesToday}</div>
+                <div className="text-2xl font-bold">{mirror.totalFaceDetected}</div>
               </CardContent>
             </Card>
 
@@ -156,7 +142,7 @@ export function MirrorDetails({ mirror }: MirrorDetailsProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{mirror.currentEmotion}</div>
+                <div className="text-2xl font-bold">{mirror.emotion}</div>
                 <div className="text-sm text-muted-foreground">
                   {mirror.sentiment > 0 ? `${mirror.sentiment}/10 sentiment` : "No data"}
                 </div>
@@ -172,7 +158,7 @@ export function MirrorDetails({ mirror }: MirrorDetailsProps) {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {mirror.status === "offline" ? "N/A" : `${mirror.temperature}°F`}
+                  {mirror.status === "offline" ? "N/A" : `${mirror.avgBodyTemperature}°F`}
                 </div>
               </CardContent>
             </Card>

@@ -26,107 +26,13 @@ import {
   WifiOff,
   Settings,
 } from "lucide-react"
+import { MirrorType } from "@/context/global-context-type"
 
-const mirrorData = [
-  {
-    id: "MIR-001",
-    name: "Main Lobby Mirror 1",
-    location: "Main Lobby",
-    status: "online",
-    lastSeen: "30 sec ago",
-    uptime: 99.8,
-    facesToday: 89,
-    currentEmotion: "Happy",
-    sentiment: 8.2,
-    responseTime: 42,
-    temperature: 68,
-    cpuUsage: 23,
-    memoryUsage: 45,
-    storageUsage: 67,
-  },
-  {
-    id: "MIR-002",
-    name: "Main Lobby Mirror 2",
-    location: "Main Lobby",
-    status: "online",
-    lastSeen: "1 min ago",
-    uptime: 98.5,
-    facesToday: 67,
-    currentEmotion: "Neutral",
-    sentiment: 7.1,
-    responseTime: 38,
-    temperature: 70,
-    cpuUsage: 19,
-    memoryUsage: 52,
-    storageUsage: 71,
-  },
-  {
-    id: "MIR-003",
-    name: "Reception Mirror",
-    location: "Reception Area",
-    status: "online",
-    lastSeen: "45 sec ago",
-    uptime: 97.2,
-    facesToday: 45,
-    currentEmotion: "Surprised",
-    sentiment: 7.8,
-    responseTime: 51,
-    temperature: 72,
-    cpuUsage: 31,
-    memoryUsage: 38,
-    storageUsage: 55,
-  },
-  {
-    id: "MIR-004",
-    name: "Break Room Mirror 1",
-    location: "Break Room",
-    status: "offline",
-    lastSeen: "2 hours ago",
-    uptime: 85.3,
-    facesToday: 12,
-    currentEmotion: "N/A",
-    sentiment: 0,
-    responseTime: 0,
-    temperature: 0,
-    cpuUsage: 0,
-    memoryUsage: 0,
-    storageUsage: 0,
-  },
-  {
-    id: "MIR-005",
-    name: "Conference Room A",
-    location: "Conference Room A",
-    status: "online",
-    lastSeen: "2 min ago",
-    uptime: 99.1,
-    facesToday: 23,
-    currentEmotion: "Happy",
-    sentiment: 8.5,
-    responseTime: 35,
-    temperature: 69,
-    cpuUsage: 15,
-    memoryUsage: 29,
-    storageUsage: 43,
-  },
-  {
-    id: "MIR-006",
-    name: "Executive Floor Mirror 1",
-    location: "Executive Floor",
-    status: "warning",
-    lastSeen: "5 min ago",
-    uptime: 94.7,
-    facesToday: 34,
-    currentEmotion: "Neutral",
-    sentiment: 7.3,
-    responseTime: 89,
-    temperature: 75,
-    cpuUsage: 67,
-    memoryUsage: 78,
-    storageUsage: 82,
-  },
-]
+interface MirrorGridProps {
+  mirrors: MirrorType[];
+}
 
-export function MirrorGrid() {
+export function MirrorGrid({ mirrors }: MirrorGridProps) {
   const [selectedMirror, setSelectedMirror] = useState<string | null>(null)
 
   const getStatusIcon = (status: string) => {
@@ -175,7 +81,7 @@ export function MirrorGrid() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {mirrorData.map((mirror) => (
+      {mirrors.map((mirror) => (
         <Card key={mirror.id} className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -198,7 +104,7 @@ export function MirrorGrid() {
                   <Eye className="w-3 h-3" />
                   <span>Faces Today</span>
                 </div>
-                <div className="font-semibold">{mirror.facesToday}</div>
+                <div className="font-semibold">{mirror.totalFaceDetected}</div>
               </div>
               <div>
                 <div className="flex items-center gap-1 text-muted-foreground">
@@ -232,7 +138,7 @@ export function MirrorGrid() {
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                <span>{mirror.lastSeen}</span>
+                <span>{mirror.lastUpdate}</span>
               </div>
               {mirror.status !== "offline" && (
                 <div className="flex items-center gap-1">
