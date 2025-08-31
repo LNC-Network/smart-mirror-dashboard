@@ -41,3 +41,24 @@ export function addMirror({ id, ipAddress }: MirrorType): Promise<void> {
         });
     });
 }
+
+export function getAllMirrorsIpAddress(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+        const db = new sqlite3.Database("./database/data.db", (err) => {
+            if (err) {
+                console.error("Error opening database:", err);
+                return reject(err);
+            }
+
+            db.all("SELECT ipAddress FROM mirrors", [], (err, rows) => {
+                if (err) {
+                    console.error("Error querying database:", err);
+                    return reject(err);
+                }
+
+                const ipAddresses = rows.map(row => row.ipAddress);
+                resolve(ipAddresses);
+            });
+        });
+    });
+}

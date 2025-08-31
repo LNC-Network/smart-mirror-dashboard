@@ -7,8 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MirrorGrid } from "@/components/mirror-grid"
 import { MirrorStats } from "@/components/mirror-stats"
 import { MirrorFilters } from "@/components/mirror-filters"
-import { Search, RefreshCw } from "lucide-react"
+import { Search, RefreshCw, Plus } from "lucide-react"
 import { useGlobalContext } from "@/context/global-context-manager"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export default function MirrorsPage() {
   const {
@@ -16,7 +18,8 @@ export default function MirrorsPage() {
     activeMirrors,
     offlineMirrors,
     totalFaceCount,
-    mirrors
+    mirrors,
+    setTotalMirrorCount
   } = useGlobalContext();
 
   return (
@@ -33,6 +36,52 @@ export default function MirrorsPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Mirror
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Mirror</DialogTitle>
+                  <DialogDescription>Create a new mirror for the smart mirror network.</DialogDescription>
+                </DialogHeader>
+                <form >
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="name" className="text-right">
+                        Name
+                      </Label>
+                      <Input id="name" placeholder="MIR 001" className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="ipaddress" className="text-right">
+                        IP Address
+                      </Label>
+                      <Input id="ipaddress" placeholder="192.168.0.1" className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="capacity" className="text-right">
+                        Capacity
+                      </Label>
+                      <Input
+                        id="capacity"
+                        type="number"
+                        placeholder="100"
+                        className="col-span-3"
+                        required
+                        min="1"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Create Location</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
             <Button variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
