@@ -2,7 +2,6 @@ import type React from "react"
 import { Metadata } from "next"
 import { metadata as siteMetadata } from "./matadata"
 import { Montserrat, Open_Sans } from "next/font/google"
-import { GlobalContextProvider } from "@/context/global-context-manager"
 import "./globals.css"
 
 const montserrat = Montserrat({
@@ -29,9 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${montserrat.variable} ${openSans.variable}`}>
       <body>
-        <GlobalContextProvider>
-          {children}
-        </GlobalContextProvider>
+
+        {children}
+
       </body>
     </html>
   )
